@@ -8,47 +8,15 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 } else {
 
+//get admin ID 
 
-    //get data 
+$admin_id = $_SESSION['admin_id'];
 
-    $admin_id = $_SESSION['admin_id'];
-
-    //get all categories
-        $stmt = $pdo->prepare('SELECT * FROM categories');
-        $stmt->execute();
-        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        /*foreach($categories as $cate){
-            echo $cate['name'] . ' + ' . $cate['id'];//
-        }*/
-
-    if($_SERVER['REQUEST_METHOD'] === 'POST'){
-
-        //data collection
-        $productName = $_POST['productName'];
-        $CategoryID = $_POST['categoryId'] ;
-        $Price = $_POST['price'];
-        $StockQty = $_POST['stock'];
-        $Description = $_POST['description'];
-        $productImg = $_FILES['productImage'];
-        if(isset($_POST['onSale'])){
-            $onSale = true;
-        } else {
-            $onSale = false;
-
-        }
-        $salePercentage = $_POST['salePercentage'];
-
-
-
-
-
-
-
-
-
-
-    }
+//get all categories
+$stmt = $pdo->prepare('SELECT * FROM categories');
+$stmt->execute();
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
 
 }
 
@@ -185,6 +153,7 @@ if (!isset($_SESSION['admin_id'])) {
             </ul>
 
             <a href="p_logout.php" style="text-decoration: none;">
+               <!--logout button-->
                 <div class="sys-out">
                     Logout &nbsp; <img src="../sys_img/logout.png" alt="logout icon">
                 </div>
@@ -447,9 +416,12 @@ if (!isset($_SESSION['admin_id'])) {
             </head>
 
             <body>
+                <div id="feedback" class="feedback" style="width: 100%; padding: 2%; text-align: center; display: flex; align-items: center; justify-content: center; color: white">
+
+                </div>
                 <div class="form-container">
                     <h1>Add New Product</h1>
-                    <form id="productForm">
+                    <form id="productForm" method="post" enctype="multipart/form-data">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="productName">Product Name <span class="required">*</span></label>
@@ -626,16 +598,16 @@ if (!isset($_SESSION['admin_id'])) {
         salePercentageInput.addEventListener('input', calculateSalePrice);
 
 
-    //send category form data to processing file using fetch
+    //send product form data to processing file using fetch
 
-    document.getElementById('categoryForm').addEventListener('submit', function(e) {
+    document.getElementById('productForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const form = e.target;
         const feedback = document.getElementById('feedback');
         feedback.textContent = '';
 
         //fetch processing file
-        fetch('p_category.php', {
+        fetch('p_products.php', {
             method: 'POST',
             body: new FormData(form),
             credentials: 'same-origin'
@@ -652,7 +624,7 @@ if (!isset($_SESSION['admin_id'])) {
 
             if (data.status === 'success') {
                 console.log('win');
-                feedback.textContent = 'Category created successfully!';
+                feedback.textContent = 'Product created successfully!';
                 form.reset(); // Reset the form after successful submission
             } else {
                 console.log('error');
