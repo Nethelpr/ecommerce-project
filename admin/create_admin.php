@@ -371,7 +371,7 @@ $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="form-group">
                                 <label for="password">Password <span class="required">*</span></label>
                                 <input
-                                    type="text"
+                                    type="password"
                                     id="password"
                                     name="password"
                                     pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}"
@@ -394,7 +394,7 @@ $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="form-group">
                                 <label for="cpassword">Confirm Password <span class="required">*</span></label>
                                 <input
-                                    type="text"
+                                    type="password"
                                     id="cpassword"
                                     name="cpassword"
                                     pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}" 
@@ -435,26 +435,45 @@ $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // form elements 
 
-    let pass_1 = document.getElementById('password');
-    let pass_2 = document.getElementById('cpassword');
-    let msg = document.getElementsByClassName('.pass_content');
+    
+    let pass = document.getElementById('cpassword');
+let pass1 = document.getElementById('password');
+
+//disable button
+const submitBtn = document.querySelector('.submit-btn');
+
+function check_password() {
+    if (pass1.value === pass.value && pass1.value !== '') {
+        document.querySelector('.pass_content').innerHTML = 'Passwords match';
+        document.querySelector('.pass_content').style.color = 'green';
+        submitBtn.disabled = false; // Enable button
+    } else {
+        document.querySelector('.pass_content').innerHTML = 'Passwords do not match';
+        document.querySelector('.pass_content').style.color = 'red';
+        submitBtn.disabled = true; // Enable button
+    }
+}
+
+// Attach event listeners to both fields
+pass.addEventListener('keyup', check_password);
+pass1.addEventListener('keyup', check_password);
 
     
 
-    pass_2.addEventListener( 'input', check_password());
-    pass_1.addEventListener( 'input', check_password2());
+    
+   
 
 
     //send product form data to processing file using fetch
 
-    document.getElementById('productForm').addEventListener('submit', function(e) {
+    document.getElementById('adminForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const form = e.target;
         const feedback = document.getElementById('feedback');
         feedback.textContent = '';
 
         //fetch processing file
-        fetch('p_products.php', {
+        fetch('p_addAdmin.php', {
             method: 'POST',
             body: new FormData(form),
             credentials: 'same-origin'
@@ -471,11 +490,11 @@ $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if (data.status === 'success') {
                 console.log('win');
-                feedback.textContent = 'Product created successfully!';
+                feedback.textContent = 'Admin added successfully!';
                 form.reset(); // Reset the form after successful submission
             } else {
                 console.log('error');
-                feedback.textContent = data.message || 'Failed to create category.';
+                feedback.textContent = data.message || 'Failed to add admin.';
             }
         }).catch(error => {
             console.error('Error:', error);
