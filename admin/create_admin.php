@@ -13,9 +13,9 @@ if (!isset($_SESSION['admin_id'])) {
 $admin_id = $_SESSION['admin_id'];
 
 //get all categories
-$stmt = $pdo->prepare('SELECT * FROM categories');
+$stmt = $pdo->prepare('SELECT * FROM admin_users');
 $stmt->execute();
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
   
 
 }
@@ -280,52 +280,6 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     cursor: pointer;
                 }
 
-                input[type="checkbox"] {
-                    width: auto;
-                    transform: scale(1.2);
-                    cursor: pointer;
-                }
-
-                .sale-fields {
-                    display: block;
-                    opacity: 1;
-                    transition: all 0.3s ease;
-                    border: 2px dashed #667eea;
-                    border-radius: 10px;
-                    padding: 20px;
-                    margin-top: 15px;
-                    background: rgba(102, 126, 234, 0.05);
-                }
-
-                .sale-fields.show {
-                    display: block;
-                    opacity: 1;
-                }
-
-                .price-display {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 15px;
-                    margin-top: 15px;
-                }
-
-                .price-info {
-                    padding: 10px;
-                    border-radius: 8px;
-                    text-align: center;
-                }
-
-                .original-price {
-                    background: rgba(231, 76, 60, 0.1);
-                    color: #e74c3c;
-                }
-
-                .sale-price-display {
-                    background: rgba(39, 174, 96, 0.1);
-                    color: #27ae60;
-                    font-weight: bold;
-                }
-
                 .submit-btn {
                     width: 100%;
                     padding: 18px;
@@ -369,6 +323,12 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     }
                 }
 
+                .form-group input{
+                    padding: 5%;
+                    width: 100%;
+                    border-radius: 20px;
+                }
+
                 .form-group {
                     animation: slideIn 0.6s ease forwards;
                 }
@@ -395,128 +355,63 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 </div>
                 <div class="form-container">
-                    <h1>Add New Product</h1>
-                    <form id="productForm" method="post" enctype="multipart/form-data">
+                    <h1>Add an Admin</h1>
+                    <form id="adminForm" method="post">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="productName">Product Name <span class="required">*</span></label>
+                                <label for="adminmail">Admin Email<span class="required">*</span></label>
+                                <input
+                                    type="email"
+                                    id="adminmail"
+                                    name="adminmail"
+                                    required
+                                    placeholder="Enter admin email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password <span class="required">*</span></label>
                                 <input
                                     type="text"
-                                    id="productName"
-                                    name="productName"
+                                    id="password"
+                                    name="password"
+                                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}"
                                     required
-                                    placeholder="Enter product name...">
+                                     
+                                            >
+                                            
+                                            <div class="instructs" style="color: rgb(80, 79, 79); margin-top: 20px;">
+                                                <h4>Allowed Password Format</h4>
+                                                <ul style="color: green">
+                                                    <li>Must contain at least one Capital letter</li>
+                                                    <li>Must contain lower case letters</li>
+                                                    <li>Must contain a number</li>
+                                                    <li>Must contain symbols e.g. "@ # $ % &"</li>
+                                                    <li>Must be 8 characters long or more to pass</li>
+                                                </ul>
+                                            </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="categoryId">Category <span class="required">*</span></label>
-                                <select id="categoryId" name="categoryId" required>
-                                    <?php foreach($categories as $cate){
-                                    
-                                        echo '<option value="'.$cate['id'].'">' . $cate['name'] . '</option>';
-                                    
-                                    }
-                                    
-                                    ?>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="price">Price <span class="required">*</span></label>
+                                <label for="cpassword">Confirm Password <span class="required">*</span></label>
                                 <input
-                                    type="number"
-                                    id="price"
-                                    name="price"
-                                    step="0.01"
-                                    min="0"
+                                    type="text"
+                                    id="cpassword"
+                                    name="cpassword"
+                                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}" 
                                     required
-                                    placeholder="0.00">
-                            </div>
+                                            >
 
-                            <div class="form-group">
-                                <label for="stock">Stock Quantity <span class="required">*</span></label>
-                                <input
-                                    type="number"
-                                    id="stock"
-                                    name="stock"
-                                    min="0"
-                                    required
-                                    placeholder="0">
+                                            <div class="pass_content" style="margin-top:1%; width: 100%; text-align:center; color: red">
+
+                                            </div>
                             </div>
+                            
                         </div>
 
-                        <div class="form-group full-width">
-                            <label for="description">Description <span class="required">*</span></label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                required
-                                placeholder="Enter product description..."></textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="productImage">Product Image <span class="required">*</span></label>
-                            <div class="file-input-wrapper">
-                                <input
-                                    type="file"
-                                    id="productImage"
-                                    name="productImage"
-                                    accept="image/*"
-                                    required>
-                                <span id="fileText">📸 Choose Product Image</span>
-                            </div>
-                            <div id="fileName" class="file-name"></div>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <div class="checkbox-group">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" id="onSale" name="onSale">
-                                    <label for="onSale">Product is on sale</label>
-                                </div>
-                            </div>
-
-                            <div id="saleFields" class="sale-fields">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="salePercentage">Sale Percentage (%)</label>
-                                        <input
-                                            type="number"
-                                            id="salePercentage"
-                                            name="salePercentage"
-                                            min="1"
-                                            max="100"
-                                            placeholder="10">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="salePrice">Sale Price</label>
-                                        <input
-                                            type="number"
-                                            id="salePrice"
-                                            name="salePrice"
-                                            step="0.01"
-                                            min="0"
-                                            placeholder="0.00"
-                                            readonly>
-                                    </div>
-                                </div>
-
-                                <div class="price-display" id="priceDisplay" style="display: block;">
-                                    <div class="price-info original-price">
-                                        <div>Original Price</div>
-                                        <div id="originalPriceDisplay">$0.00</div>
-                                    </div>
-                                    <div class="price-info sale-price-display">
-                                        <div>Sale Price</div>
-                                        <div id="salePriceDisplay">$0.00</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
 
                         <button type="submit" class="submit-btn">
-                            Create Product
+                            Add Admin
                         </button>
                     </form>
                 </div>
@@ -538,39 +433,16 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         event.target.style.border = '2px solid  #ff7e5f';
     }
 
-    // Form elements
-      
-    const onSaleCheckbox = document.getElementById('onSale');
-        const saleFields = document.getElementById('saleFields');
-        const priceInput = document.getElementById('price');
-        const salePercentageInput = document.getElementById('salePercentage');
-        const salePriceInput = document.getElementById('salePrice');
-        const priceDisplay = document.getElementById('priceDisplay');
-        const originalPriceDisplay = document.getElementById('originalPriceDisplay');
-        const salePriceDisplay = document.getElementById('salePriceDisplay');
+    // form elements 
 
-        // Calculate sale price
-        function calculateSalePrice() {
-            const originalPrice = parseFloat(priceInput.value) || 0;
-            const salePercentage = parseFloat(salePercentageInput.value) || 0;
+    let pass_1 = document.getElementById('password');
+    let pass_2 = document.getElementById('cpassword');
+    let msg = document.getElementsByClassName('.pass_content');
 
-            if (originalPrice > 0 && salePercentage > 0) {
-                const discount = (originalPrice * salePercentage) / 100;
-                const salePrice = originalPrice - discount;
-                
-                salePriceInput.value = salePrice.toFixed(2);
-                originalPriceDisplay.textContent = `$${originalPrice.toFixed(2)}`;
-                salePriceDisplay.textContent = `$${salePrice.toFixed(2)}`;
-                priceDisplay.style.display = 'grid';
-            } else {
-                salePriceInput.value = '';
-                priceDisplay.style.display = 'none';
-            }
-        }
+    
 
-        // Event listeners for price calculation
-        priceInput.addEventListener('input', calculateSalePrice);
-        salePercentageInput.addEventListener('input', calculateSalePrice);
+    pass_2.addEventListener( 'input', check_password());
+    pass_1.addEventListener( 'input', check_password2());
 
 
     //send product form data to processing file using fetch
