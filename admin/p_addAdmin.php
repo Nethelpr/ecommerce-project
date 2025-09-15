@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $email = $_POST['adminmail'];
     $password = $_POST['password'];
+    $name = $_POST['username'];
 
     $stmt = $pdo->prepare("SELECT * FROM admin_users where username = :email");
     $stmt->bindParam(':email', $email);
@@ -22,8 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashed_pass = password_hash($password, PASSWORD_DEFAULT);
 
         //prepare sql statement
-        $stmt = $pdo->prepare("INSERT INTO admin_users (username, password) VALUES (:email, :password)");
+        $stmt = $pdo->prepare("INSERT INTO admin_users (username, password, admin_name) VALUES (:email, :password, :name)");
         //bind parameters   
+        $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $hashed_pass);
         //execute the statement 

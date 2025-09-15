@@ -369,6 +369,16 @@ $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
 
                             <div class="form-group">
+                                <label for="username">Admin Name<span class="required">*</span></label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    required
+                                    placeholder="Enter admin email">
+                            </div>
+
+                            <div class="form-group">
                                 <label for="password">Password <span class="required">*</span></label>
                                 <input
                                     type="password"
