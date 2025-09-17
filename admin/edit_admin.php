@@ -7,10 +7,16 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 } else {
 
+    require_once '../includes/db.php';
 
-    //get data 
-
-    $admin_id = $_SESSION['admin_id'];
+    // Fetch admin details
+    $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE id = ?");
+    $stmt->execute([$_GET['id']]);
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$admin) {
+        echo "Admin not found.";
+        exit;
+    }
 
     
 }
@@ -137,10 +143,10 @@ if (!isset($_SESSION['admin_id'])) {
         <div class="box system-parts" style="grid-area: box-2">
 
             <div id="welcome">
-                <h2 style="margin-bottom: 20px;">Manage Admins</h2>
-                <p>Here you can manage existing admin accounts. You can view, edit, or delete admin accounts as needed.</p>
+                <h2 style="margin-bottom: 20px;">Edit Admin</h2>
+                <p>Here you can make edits to your admin's information</p>
                 <br>
-                <h3>Admin Accounts</h3>
+                <h3>Edit Account Information</h3>
 
                 <div class="feedback" style="width: 100%; height: fit-content; padding: 1.3%; text-align: center;">
 
@@ -170,111 +176,60 @@ if (!isset($_SESSION['admin_id'])) {
                         border-radius: 10px;
                     }
 
-                    .admin-card{
-                        border: 1px solid #ddd;
-                        border-radius: 8px;
-                        padding: 15px;
-                        margin: 10px;
-                        width: fit-content;
-                        height: fit-content;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                        transition: box-shadow 0.3s ease-in-out;
-                        background-color: purple;
-                        color: white;
-                        transition: all 300ms ease-in-out;
+                   form{
+                    width: fit-content;
+                    padding: 1%;
 
-                    }
+                   }
 
-                    .admin-card > div{
-                        margin: 10px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: flex-start;
-                    }
+                   form .form-parts{
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 20px;
+                    width: 300px;
+                   }
 
-                    .admin-card > div > span{
-                        margin-right: 10px;
-                        background-color: white;
-                        color: purple;
-                        padding: 5px 10px;
-                        border-radius: 40%;
-                    }
+                   form .form-parts label{
+                    margin-bottom: 10px;
+                    font-weight: bold;
+                   }
 
-                    .admin-card .admin-actions {
-                        justify-content: center;
-                        padding-top: 10px;
-                    }
-
-                    .admin-card .admin-actions a{
-                        text-decoration: none;
-                        color: white;
-                        
-                    }
-
-                    .admin-card:hover{
-                        transform: translateY(-10px);
-                    }
-
-                    .admin-card .admin-actions a:nth-child(1){
-                        
-
-                        background-color: white;
-                        color: purple;
-                        padding: 5px 10px;
-                        border-radius: 20px;
-                    }
-
-                    .admin-card .admin-actions a:nth-child(1):hover{
-                        background-color: #f0f0f0;
-                        color: green;
-                        transition: all 0.3s ease-in-out;
-                    }
-
-                    .admin-card .admin-actions a:nth-child(2){
-                        background-color: red;
-                        color: white;
-                        padding: 5px 10px;
-                        border-radius: 20px;
-                    }
-
-                    .admin-card .admin-actions a:nth-child(2):hover{
-                        background-color: darkred;
-                        color: white;
-                        transition: all 0.3s ease-in-out;
-                    }
+                   form .form-parts input{
+                    padding: 10px;
+                    border: 1px solid gray;
+                    border-radius: 5px;
+                    font-size: 16px;
+                   }
 
 
 
                 </style>
-                    
-                        <?php
-                        // Fetch admin accounts from the database
-                        require_once __DIR__ . '/../includes/db.php';
-                        $stmt = $pdo->query("SELECT id ,username, password, admin_name FROM admin_users");
-                       /* while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo "<tr>";
-                            echo "<td>" . htmlspecialchars($row['id']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['username']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['admin_name']) . "</td>";
-                            echo "<td>
-                                    <a href='edit_admin.php?id=" . urlencode($row['id']) . "' style='margin-right: 10px;'>Edit</a>
-                                    <a href='delete_admin.php?id=" . urlencode($row['id']) . "' onclick=\"return confirm('Are you sure you want to delete this admin?');\">Delete</a>
-                                  </td>";
-                            echo "</tr>";
-                        }*/
 
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo "<div class='admin-card'>";
-                            echo " <div class='admin-heading'><span>". htmlspecialchars($row['id']) ."</span><h4>" . htmlspecialchars($row['admin_name'])    . "</h4></div>";
-                            echo "<div class='admin-email'><span>@ </span>". htmlspecialchars($row['username']) ."</div>";
-                            echo "<div class='admin-actions'>
-                                    <a href='#' onclick='editAdmin(" . urlencode($row['id']) . ");' style='margin-right: 10px;'>Edit</a>
-                                   <!-- <a href='p_edit_admin.php?id=" . urlencode($row['id']) . "' onclick=\"return confirm('Are you sure you want to delete this admin?');\">Delete</a> -->
-                                     <a href='#' onclick='deleteAdmin(" . urlencode($row['id']) . ");'>Delete</a>
-                                  </div>";
-                            echo "</div>";
-                        }
-                        ?>
+                <form action="">
+
+                    <div class="form-parts">
+                        <label for="name">Admin Name</label>
+                        <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($admin['admin_name']); ?>" placeholder="<?php echo htmlspecialchars($admin['admin_name']); ?>" required>
+                    </div>
+
+                    <div class="form-parts">
+                        <label for="email">Admin Email</label>
+                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($admin['username']); ?>"  required>
+                    </div>
+
+                    <div class="form-parts">
+                        <label for="password">New Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    
+
+
+                </form>
+                    
+                      
+
+                       
                     </tbody>
                 </table>
                 </div>
