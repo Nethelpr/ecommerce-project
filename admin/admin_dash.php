@@ -168,7 +168,7 @@ if (!isset($_SESSION['admin_id'])) {
 
         .navi ul li:hover {
             background-color: rgb(48, 48, 48);
-            border: 2px solid #ff7e5f;
+            border: 2px solid purple;
             padding-left: 20px;
             transition: all 0.3s ease-in-out;
         }
@@ -235,18 +235,6 @@ if (!isset($_SESSION['admin_id'])) {
 
 
 </body>
-<script>
-    //make the border of the ul li light
 
-    function border() {
-        let li = document.querySelectorAll('.navi ul li');
-        li.forEach((item) => {
-            item.style.border = '2px solid rgb(48, 48, 48)';
-        });
-        event.target.style.border = '2px solid  #ff7e5f';
-    }
-
-
-</script>
 
 </html>

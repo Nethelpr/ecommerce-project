@@ -121,7 +121,7 @@ if (!isset($_SESSION['admin_id'])) {
 
         .navi ul li:hover {
             background-color: rgb(48, 48, 48);
-            border: 2px solid #ff7e5f;
+            border: 2px solid purple;
             padding-left: 20px;
             transition: all 0.3s ease-in-out;
         }
@@ -141,6 +141,10 @@ if (!isset($_SESSION['admin_id'])) {
                 <p>Here you can manage existing admin accounts. You can view, edit, or delete admin accounts as needed.</p>
                 <br>
                 <h3>Admin Accounts</h3>
+
+                <div class="feedback" style="width: 100%; height: fit-content; padding: 1.3%; text-align: center;">
+
+                </div>
 
                 <div class="part" >
 
@@ -175,8 +179,10 @@ if (!isset($_SESSION['admin_id'])) {
                         height: fit-content;
                         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                         transition: box-shadow 0.3s ease-in-out;
-                        background-color: green;
+                        background-color: purple;
                         color: white;
+                        transition: all 300ms ease-in-out;
+
                     }
 
                     .admin-card > div{
@@ -189,7 +195,7 @@ if (!isset($_SESSION['admin_id'])) {
                     .admin-card > div > span{
                         margin-right: 10px;
                         background-color: white;
-                        color: green;
+                        color: purple;
                         padding: 5px 10px;
                         border-radius: 40%;
                     }
@@ -205,11 +211,15 @@ if (!isset($_SESSION['admin_id'])) {
                         
                     }
 
+                    .admin-card:hover{
+                        transform: translateY(-10px);
+                    }
+
                     .admin-card .admin-actions a:nth-child(1){
                         
 
                         background-color: white;
-                        color: green;
+                        color: purple;
                         padding: 5px 10px;
                         border-radius: 20px;
                     }
@@ -258,8 +268,9 @@ if (!isset($_SESSION['admin_id'])) {
                             echo " <div class='admin-heading'><span>". htmlspecialchars($row['id']) ."</span><h4>" . htmlspecialchars($row['admin_name'])    . "</h4></div>";
                             echo "<div class='admin-email'><span>@ </span>". htmlspecialchars($row['username']) ."</div>";
                             echo "<div class='admin-actions'>
-                                    <a href='edit_admin.php?id=" . urlencode($row['id']) . "' style='margin-right: 10px;'>Edit</a>
-                                    <a href='delete_admin.php?id=" . urlencode($row['id']) . "' onclick=\"return confirm('Are you sure you want to delete this admin?');\">Delete</a>
+                                    <a href='p_edit_admin.php?id=" . urlencode($row['id']) . "' style='margin-right: 10px;'>Edit</a>
+                                   <!-- <a href='p_edit_admin.php?id=" . urlencode($row['id']) . "' onclick=\"return confirm('Are you sure you want to delete this admin?');\">Delete</a> -->
+                                     <a href='#' onclick='deleteAdmin(" . urlencode($row['id']) . ");'>Delete</a>
                                   </div>";
                             echo "</div>";
                         }
@@ -293,45 +304,39 @@ if (!isset($_SESSION['admin_id'])) {
     }
 
 
-    //send category form data to processing file using fetch
+    //fetch processing file
 
-    document.getElementById('categoryForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const form = e.target;
-        const feedback = document.getElementById('feedback');
-        feedback.textContent = '';
+    function deleteAdmin(id){
 
-        //fetch processing file
-        fetch('p_category.php', {
+        let feedback = document.getElementsByClassName('feedback')[0];
+
+        if (confirm("Are you sure you want to delete this admin?")) {
+        fetch('p_delete_admin.php', {
             method: 'POST',
-            body: new FormData(form),
-            credentials: 'same-origin'
-        }).then(async response => {
-            const text = await response.text();
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (err) {
-                throw new Error('Invalid server response: ' + text);
-            }
-            return data;
-        }).then(data => {
-
-            if (data.status === 'success') {
-                console.log('win');
-                feedback.textContent = 'Category created successfully!';
-                form.reset(); // Reset the form after successful submission
-            } else {
-                console.log('error');
-                feedback.textContent = data.message || 'Failed to create category.';
-            }
-        }).catch(error => {
-            console.error('Error:', error);
-            feedback.textContent = 'An error occurred. Please try again.';
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id })
         })
+        .then(response => response.json()) // assuming JSON response
+        .then(data => {
+            if (data.success) {
+                feedback.innerHTML = "Admin deleted successfully.";
+                feedback.style.color = "green";
+                // Optionally reload or remove element from DOM
+                location.reload();
+            } else {
+                feedback.innerHTML = "Failed to delete admin: " + data.message;
+                feedback.style.color = "red";
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}
 
-
-    });
+    
 </script>
 
 </html>
