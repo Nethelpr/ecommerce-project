@@ -288,15 +288,7 @@ if (!isset($_SESSION['admin_id'])) {
 
 </body>
 <script>
-    //make the border of the ul li light
-
-    function border() {
-        let li = document.querySelectorAll('.navi ul li');
-        li.forEach((item) => {
-            item.style.border = '2px solid rgb(48, 48, 48)';
-        });
-        event.target.style.border = '2px solid  #ff7e5f';
-    }
+        
 
     
     function editAdmin(id){

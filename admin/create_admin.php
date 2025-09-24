@@ -391,7 +391,7 @@ $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             
                                             <div class="instructs" style="color: rgb(80, 79, 79); margin-top: 20px;">
                                                 <h4>Allowed Password Format</h4>
-                                                <ul style="color: green">
+                                                <ul style="color: darkgrey">
                                                     <li>Must contain at least one Capital letter</li>
                                                     <li>Must contain lower case letters</li>
                                                     <li>Must contain a number</li>

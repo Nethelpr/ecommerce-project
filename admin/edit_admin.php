@@ -142,13 +142,18 @@ if (!isset($_SESSION['admin_id'])) {
 
         <div class="box system-parts" style="grid-area: box-2">
 
+        <div class="exit" style="width:100%; height: fit-content; padding: 2%; text-align: right;">
+
+        </div>
+
             <div id="welcome">
                 <h2 style="margin-bottom: 20px;">Edit Admin</h2>
-                <p>Here you can make edits to your admin's information</p>
+                <p>Here you can make edits to your admin's information.</p>
+
                 <br>
                 <h3>Edit Account Information</h3>
 
-                <div class="feedback" style="width: 100%; height: fit-content; padding: 1.3%; text-align: center;">
+                <div class="feedback" id='feedback' style="width: 100%; height: fit-content; padding: 1.3%; text-align: center;">
 
                 </div>
 
@@ -205,7 +210,12 @@ if (!isset($_SESSION['admin_id'])) {
 
                 </style>
 
-                <form action="">
+                <form action="" method="POST" id="updateAdmin">
+
+                    <div class="form-parts">
+                        <label for="id">Admin ID</label>
+                        <input type="number" id="id" name="id" value="<?php echo htmlspecialchars($admin['id']); ?>" placeholder="<?php echo htmlspecialchars($admin['id']); ?>" required readonly>
+                    </div>
 
                     <div class="form-parts">
                         <label for="name">Admin Name</label>
@@ -219,10 +229,20 @@ if (!isset($_SESSION['admin_id'])) {
 
                     <div class="form-parts">
                         <label for="password">New Password</label>
-                        <input type="password" id="password" name="password" required>
+                        <input type="password" id="password" name="password" value="<?php echo htmlspecialchars($admin['password']); ?>" required  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}">
+                        <br><h4>Allowed Password Format</h4>
+                                                <ul style="color: darkgrey">
+                                                    <li>Must contain at least one Capital letter</li>
+                                                    <li>Must contain lower case letters</li>
+                                                    <li>Must contain a number</li>
+                                                    <li>Must contain symbols e.g. "@ # $ % &"</li>
+                                                    <li>Must be 8 characters long or more to pass</li>
+                                                </ul>
                     </div>
                     
-                    
+                    <div class="form-parts">
+                        <input type="submit" value="Update Admin" style="background-color: #ff7e5f; color: white; border: none; cursor: pointer;">
+                    </div>
 
 
                 </form>
@@ -243,15 +263,7 @@ if (!isset($_SESSION['admin_id'])) {
 
 </body>
 <script>
-    //make the border of the ul li light
-
-    function border() {
-        let li = document.querySelectorAll('.navi ul li');
-        li.forEach((item) => {
-            item.style.border = '2px solid rgb(48, 48, 48)';
-        });
-        event.target.style.border = '2px solid  #ff7e5f';
-    }
+    
 
     
     function editAdmin(id){
@@ -262,35 +274,46 @@ if (!isset($_SESSION['admin_id'])) {
 
     //fetch processing file
 
-    function deleteAdmin(id){
+    document.getElementById('updateAdmin').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const feedback = document.getElementById('feedback');
+        feedback.textContent = '';
 
-        let feedback = document.getElementsByClassName('feedback')[0];
-
-        if (confirm("Are you sure you want to delete this admin?")) {
-        fetch('p_delete_admin.php', {
+        //fetch processing file
+        fetch('p_edit_admin.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: id })
-        })
-        .then(response => response.json()) // assuming JSON response
-        .then(data => {
-            if (data.success) {
-                feedback.innerHTML = "Admin deleted successfully.";
-                feedback.style.color = "green";
-                // Optionally reload or remove element from DOM
-                location.reload();
-            } else {
-                feedback.innerHTML = "Failed to delete admin: " + data.message;
-                feedback.style.color = "red";
+            body: new FormData(form),
+            credentials: 'same-origin'
+        }).then(async response => {
+            const text = await response.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (err) {
+                throw new Error('Invalid server response: ' + text);
             }
-        })
-        .catch(error => {
+            return data;
+        }).then(data => {
+
+            if (data.status === 'success') {
+                console.log('win');
+                feedback.textContent = data.message;
+                feedback.style.color = 'green';
+                form.reset(); // Reset the form after successful submission
+            } else if (data.status === 'error'){
+                console.log('error');
+                feedback.textContent = data.message ;
+                feedback.style.color = 'red';
+                form.reset(); // Reset the form after successful submission
+            }
+        }).catch(error => {
             console.error('Error:', error);
-        });
-    }
-}
+            feedback.textContent = 'An error occurred. Please try again.';
+        })
+
+
+    });
 
     
 </script>
