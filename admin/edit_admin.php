@@ -34,6 +34,7 @@ if (!isset($_SESSION['admin_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>admin dashboard - Manage Admins</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=close" />
 </head>
 
 <body>
@@ -142,9 +143,7 @@ if (!isset($_SESSION['admin_id'])) {
 
         <div class="box system-parts" style="grid-area: box-2">
 
-        <div class="exit" style="width:100%; height: fit-content; padding: 2%; text-align: right;">
-
-        </div>
+       
 
             <div id="welcome">
                 <h2 style="margin-bottom: 20px;">Edit Admin</h2>
@@ -209,6 +208,30 @@ if (!isset($_SESSION['admin_id'])) {
 
 
                 </style>
+
+                                <div class="exit" style="width:100%; height: fit-content;display: flex; align-items: center; justify-content: right; cursor: pointer;" onclick="window.location.href='manage_admins.php'">
+
+                                <style>
+                                    .material-symbols-outlined {
+                                    font-variation-settings:
+                                    'FILL' 3,
+                                    'wght' 400,
+                                    'GRAD' 0,
+                                    'opsz' 24,
+                                    
+                                    }
+
+                                    .material-symbols-outlined{
+                                        color: red;
+                                    }
+                                </style>
+
+                                <p style="display: flex;justify-content: right; align-items: center; flex-direction: column; color: red"><span class="material-symbols-outlined">
+                                    close
+                                </span>close</p>
+                               
+
+                                </div>
 
                 <form action="" method="POST" id="updateAdmin">
 

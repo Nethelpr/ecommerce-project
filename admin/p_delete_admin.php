@@ -17,19 +17,27 @@ $data = json_decode($json, true);
 if (isset($data['id'])) {
     $admin_to_delete = $data['id'];
 
-    if(isset($_SESSION['admin_id']) === 1){
+    if($_SESSION['admin_id'] === '3'){
         // Admin is logged in
         
     include_once('../includes/db.php');
     $id = $admin_to_delete;
 
-    $stmt = $pdo->prepare("DELETE FROM admin WHERE id = :id");
+    if ($id == 3) {
+        echo json_encode(['status' => 'error', 'message' => 'Cannot delete super admin.']); 
+      // header("Location: manage_admins.php");
+        exit();
+    } else {
+        $stmt = $pdo->prepare("DELETE FROM admin_users WHERE id = :id");
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
 
         echo json_encode(['status' => 'success', 'message' => 'Admin Deleted']); 
       // header("Location: manage_admins.php");
         exit();
+    }
+
+    
 
     } else {
         // super user not logged in

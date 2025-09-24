@@ -319,8 +319,12 @@ if (!isset($_SESSION['admin_id'])) {
                 // Optionally reload or remove element from DOM
                 location.reload();
             } else {
-                feedback.innerHTML = "Failed to delete admin: " + data.message;
+                feedback.innerHTML =  data.message;
                 feedback.style.color = "red";
+                setInterval(() => {
+                    location.reload();
+                }, 3000);
+                
             }
         })
         .catch(error => {
