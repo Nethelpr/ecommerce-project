@@ -12,7 +12,7 @@
     <a href="category.php" style="text-decoration: none; color: white;"><li onclick="border()">Create Categories</li></a>
     <a href="create_admin.php" style="text-decoration: none; color: white;"><li onclick="border()">Create Admin</li></a>
     <a href="manage_admins.php" style="text-decoration: none; color: white;"><li onclick="border()">Manage Admins</li></a>
-    <li onclick="border()">Manage Categories</li>
+    <a href="manage_categories.php" style="text-decoration: none; color: white;"><li onclick="border()">Manage Categories</li></a>
     <li onclick="border()">View Products</li>
     <li onclick="border()">View Orders</li>
     <li onclick="border()">View User Details</li>

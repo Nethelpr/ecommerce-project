@@ -1,0 +1,164 @@
+✅ Overview of What You Need
+
+You’ll need:
+
+Frontend – HTML checkout form (JS sends data via fetch to PHP)
+
+Backend PHP endpoint – Creates a form to redirect user to Payfast
+
+Payfast redirection
+
+ITN handler in PHP – To process the payment result from Payfast
+
+💡 Example Implementation
+
+html + JS
+
+<form id="checkout-form">
+  <input type="text" name="name" placeholder="Full Name" required>
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="number" name="amount" placeholder="Amount" required>
+  <button type="submit">Pay Now</button>
+</form>
+
+<script>
+document.getElementById('checkout-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+  const data = Object.fromEntries(formData.entries());
+
+  const response = await fetch('create-payment.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+
+  const result = await response.text();
+
+  // Insert and submit Payfast redirect form
+  const div = document.createElement('div');
+  div.innerHTML = result;
+  document.body.appendChild(div);
+  div.querySelector('form').submit();
+});
+</script>
+
+
+create-payment.php
+
+<?php
+// Accept JSON input
+$data = json_decode(file_get_contents('php://input'), true);
+
+// Payfast config
+$merchant_id = 'YOUR_MERCHANT_ID';
+$merchant_key = 'YOUR_MERCHANT_KEY';
+$return_url = 'https://yourdomain.com/success.php';
+$cancel_url = 'https://yourdomain.com/cancel.php';
+$notify_url = 'https://yourdomain.com/payfast-itn.php';
+
+$amount = number_format((float)$data['amount'], 2, '.', '');
+$item_name = "Order for " . htmlspecialchars($data['name']);
+
+// Build the Payfast form
+$form = <<<HTML
+<form id="payfast-form" action="https://www.payfast.co.za/eng/process" method="post">
+  <input type="hidden" name="merchant_id" value="{$merchant_id}">
+  <input type="hidden" name="merchant_key" value="{$merchant_key}">
+  <input type="hidden" name="return_url" value="{$return_url}">
+  <input type="hidden" name="cancel_url" value="{$cancel_url}">
+  <input type="hidden" name="notify_url" value="{$notify_url}">
+  <input type="hidden" name="amount" value="{$amount}">
+  <input type="hidden" name="item_name" value="{$item_name}">
+</form>
+HTML;
+
+echo $form;
+
+This returns a hidden form that the frontend JS automatically submits, redirecting the user to Payfast.
+
+////////////////////////////////////////////////
+
+3. PHP: ITN Listener (payfast-itn.php)
+
+Payfast will POST to this file after payment.
+
+<?php
+
+// STEP 1: Read posted data from Payfast
+$pfData = $_POST;
+
+// STEP 2: Verify the signature and merchant ID
+$signature = $pfData['signature'];
+unset($pfData['signature']);
+
+ksort($pfData);
+$pfParamString = '';
+foreach ($pfData as $key => $val) {
+    $pfParamString .= $key . '=' . urlencode($val) . '&';
+}
+$pfParamString = rtrim($pfParamString, '&');
+
+$passPhrase = ''; // Optional
+$tempParamString = $pfParamString;
+if ($passPhrase !== '') {
+    $tempParamString .= '&passphrase=' . urlencode($passPhrase);
+}
+
+$calculatedSignature = md5($tempParamString);
+
+if ($signature !== $calculatedSignature) {
+    http_response_code(400);
+    exit('Invalid signature');
+}
+
+// STEP 3: Validate source IP
+$valid_ips = ['197.97.145.145', '197.97.145.146', '196.33.227.175']; // Known Payfast IPs
+if (!in_array($_SERVER['REMOTE_ADDR'], $valid_ips)) {
+    http_response_code(403);
+    exit('Invalid source IP');
+}
+
+// STEP 4: Check payment_status
+if ($pfData['payment_status'] === 'COMPLETE') {
+    // ✅ Mark order as paid in DB
+    // e.g., update_order_status($pfData['m_payment_id'], 'paid');
+    file_put_contents('log.txt', "Payment complete: " . json_encode($pfData) . "\n", FILE_APPEND);
+}
+
+http_response_code(200);
+
+
+✅ Summary
+Task	Done
+Frontend collects user data	✅
+JS sends it to PHP	✅
+PHP creates Payfast form	✅
+JS submits Payfast form	✅
+User pays on Payfast	✅
+Payfast sends server-to-server confirmation to PHP ITN	✅
+PHP verifies & logs result	✅
+🧠 What You Should Do Now:
+
+Replace dummy values like merchant_id, merchant_key, and URLs.
+
+Upload this to a server with HTTPS (Payfast requires it).
+
+Test with Payfast sandbox credentials: https://sandbox.payfast.co.za
+
+Check payfast-itn.php works (log to log.txt for debugging).
+
+If you're stuck on a specific part, tell me:
+
+Are you getting an error?
+
+Is the redirect not working?
+
+Is the ITN not firing?
+
+Are you unsure about the sandbox vs live?
+
+I'll debug it with you step-by-step.
